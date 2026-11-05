@@ -523,7 +523,7 @@
                 btn.innerText = "UPLOADING... 🚀";
                 btn.disabled = true;
                 const docId = `${data.googleId}_timed_${data.questionType}`;
-                const docRef = doc(db, "hk_leaderboard", docId);
+                const docRef = doc(db, "2627p5_adjadv", docId);
                 const docSnap = await getDoc(docRef);
                 
                 if (docSnap.exists() && data.score <= docSnap.data().score) {
@@ -532,6 +532,7 @@
                     await setDoc(docRef, data);
                     alert("Score saved! 🚀");
                     document.getElementById('upload-section').style.display = 'none';
+                    showLeaderboard();
                 }
             } catch (error) {
                 console.error("Firebase error: ", error);
@@ -551,7 +552,7 @@
             
             try {
                 let q;
-                const baseRef = collection(db, "hk_leaderboard");
+                const baseRef = collection(db, "2627p5_adjadv");
                 if (classFilter === 'ALL') {
                     q = query(baseRef, where("mode", "==", mode), orderBy("score", "desc"), limit(20));
                 } else {
@@ -580,7 +581,7 @@
                         <td style="font-weight:900;">${rankDisplay}</td>
                         <td>${d.class}</td>
                         <td>${d.studentNum}</td>
-                        <td style="text-align:left; font-weight:700;">${d.name}</td>
+                        <td style="text-align:left; font-weight:700;">${d.name || d.lastName || 'Student'}</td>
                         <td style="color:var(--color-accent-dark); font-weight:900;">${d.score}</td>
                         <td>${d.accuracy}%</td>
                     `;
@@ -588,15 +589,14 @@
                     rank++;
                 });
             } catch (e) {
-                tableBody.innerHTML = '<tr><td colspan="6">System failure.</td></tr>';
-                console.error(e);
+                tableBody.innerHTML = '<tr><td colspan="6" style="color:red; font-size:12px;">Failed to load data. Firestore index may be missing. Check browser console (F12) for index link.</td></tr>';
+                console.error("Firestore Leaderboard Error:", e);
             }
         };
     </script>
 
-    <!-- Game Logic & Question Banks (Chapter 1 Adjectives and Adverbs ONLY) -->
+    <!-- Game Logic & Question Banks -->
     <script>
-        // Chapter 1 Regular -ly / -ily adverbs
         const bankLy = [
             { adj: "quick", adv: "quickly", d: ["quick", "quicky", "quickley"] },
             { adj: "noisy", adv: "noisily", d: ["noisy", "noisyly", "noisley"] },
@@ -614,7 +614,6 @@
             { adj: "loud", adv: "loudly", d: ["loud", "loudy", "louldy"] }
         ];
 
-        // Chapter 1 Irregular & Unchanged adverbs
         const bankIrregular = [
             { adj: "early", adv: "early", d: ["earlyly", "earlily", "earley"] },
             { adj: "late", adv: "late", d: ["lately", "later", "lates"] },
@@ -623,7 +622,6 @@
             { adj: "hard-working", adv: "hard", d: ["hardly", "hard-workingly", "hardworking"] }
         ];
 
-        // Chapter 1 Fill-in-the-blank questions (Strictly Adjectives vs Adverbs of Manner & easily confused distractors)
         const bankChallenge = [
             { q: "The singer performed _____ at the school concert.", a: "well", d: ["good", "goodly", "bad"] },
             { q: "She is a _____ student who gets high marks.", a: "good", d: ["well", "goodly", "best"] },
@@ -719,6 +717,7 @@
             if (state.timer <= 30) el.style.color = 'var(--color-danger)';
             else el.style.color = 'var(--text-main)';
         }
+
         function updateProgress() {
             document.getElementById('progress-display').innerText = `✔ ${state.correct}/${state.total}`;
             if (state.mode === 'timed') document.getElementById('score-display').innerText = `⭐ ${state.score}`;
@@ -743,7 +742,6 @@
             
             if (state.type === 'challenge') {
                 qPrompt.innerText = "Fill in the blank:";
-                // Capitalize the first letter of the sentence
                 let capitalizedSentence = item.q.charAt(0).toUpperCase() + item.q.slice(1);
                 qText.innerText = capitalizedSentence;
                 qText.style.fontSize = "20px";
@@ -785,7 +783,6 @@
                 if (state.mode === 'timed') state.score = Math.max(0, state.score - 5);
                 btn.classList.add('feedback-wrong');
                 
-                // Show Toy Story styled modal for wrong answer
                 let promptText = state.currentItem.adj ? state.currentItem.adj.toLowerCase() : state.currentItem.q;
                 if (state.type === 'challenge') {
                     let textToDisplay = state.currentItem.q.replace('_____', '...');
