@@ -414,7 +414,7 @@
                 <select id="filter-mode" onchange="fetchLeaderboard()">
                     <option value="timed_ly">Level 1: Type 1 (-ly/-ily)</option>
                     <option value="timed_irregular">Level 2: Type 2 (Irregular)</option>
-                    <option value="timed_challenge">Level Challenge: Ch.1 Fill-in-blanks</option>
+                    <option value="timed_challenge">Level Challenge: Fill-in-blanks</option>
                 </select>
                 
                 <select id="filter-class" onchange="fetchLeaderboard()">
@@ -678,7 +678,7 @@
             let levelText = "";
             if(state.type === 'ly') { state.bank = bankLy; levelText = "🟢 Level 1: Type 1 (-ly / -ily)"; }
             else if(state.type === 'irregular') { state.bank = bankIrregular; levelText = "🔴 Level 2: Type 2 (Irregular)"; }
-            else if(state.type === 'challenge') { state.bank = bankChallenge; levelText = "👑 Level Challenge: Ch.1 Fill-in-blanks"; }
+            else if(state.type === 'challenge') { state.bank = bankChallenge; levelText = "👑 Level Challenge: Fill-in-blanks"; }
             
             document.getElementById('level-display').innerText = levelText;
 
